@@ -25,6 +25,9 @@
             android:name=".activities.Offre"
             android:exported="false" />
         <activity
+            android:name=".activities.Authentification"
+            android:exported="false" />
+        <activity
             android:name=".activities.Offres"
             android:exported="false" />
         <activity
@@ -35,7 +38,7 @@
             android:exported="false" />
         <activity
 
-            android:name=".activities.Authentification"
+            android:name=".activities.WelcomeActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>

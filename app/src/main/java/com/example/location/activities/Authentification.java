@@ -1,30 +1,42 @@
 package com.example.location.activities;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
 import com.example.location.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.HashMap;
 import java.util.Map;
-import android.content.SharedPreferences;
-
 
 public class Authentification extends AppCompatActivity implements View.OnClickListener {
 
+    // Layouts
     private LinearLayout layoutLogin, layoutRegister;
-    private Button btnAuth, btnCreateAccount, btnConfirm, btnCancel;
+
+    // Boutons
+    private Button btnAuth, btnConfirm, btnCancel;
+    private TextView tvCreateAccount;
+
+    // Champs texte
     private EditText etLogin, etPassword, etNom, etPrenom, etPays, etAdresse, etPhone, etEmail, etPwd;
+
+    // Spinner
     private Spinner spinnerRole;
 
+    // Firebase
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
@@ -34,17 +46,18 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_authentification);
 
+        // Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         // Initialisation des vues
         layoutLogin = findViewById(R.id.Layout1);
         layoutRegister = findViewById(R.id.Layout2);
+
         btnAuth = findViewById(R.id.authButton);
-        btnCreateAccount = findViewById(R.id.acchButton);
         btnConfirm = findViewById(R.id.confirmeButton);
         btnCancel = findViewById(R.id.annulerButton);
-        spinnerRole = findViewById(R.id.spinnerRole);
+        tvCreateAccount = findViewById(R.id.tvCreateAccount);
 
         etLogin = findViewById(R.id.etLogin);
         etPassword = findViewById(R.id.etPassword);
@@ -56,20 +69,23 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
         etEmail = findViewById(R.id.nemsEditText);
         etPwd = findViewById(R.id.pwdEditText);
 
-        // Afficher le login par défaut
-        layoutLogin.setVisibility(View.VISIBLE);
-        layoutRegister.setVisibility(View.GONE);
+        spinnerRole = findViewById(R.id.spinnerRole);
 
-        // Spinner pour sélectionner le rôle
+        // Adapter pour spinner rôle
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.roles_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRole.setAdapter(adapter);
 
+        // Écouteurs de clic
         btnAuth.setOnClickListener(this);
-        btnCreateAccount.setOnClickListener(this);
         btnConfirm.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
+        tvCreateAccount.setOnClickListener(this);
+
+        // Layout par défaut
+        layoutLogin.setVisibility(View.VISIBLE);
+        layoutRegister.setVisibility(View.GONE);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -80,14 +96,19 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.authButton) {
+        int id = view.getId();
+
+        if (id == R.id.authButton) {
             loginUser();
-        } else if (view.getId() == R.id.acchButton) {
+
+        } else if (id == R.id.tvCreateAccount) {
             layoutLogin.setVisibility(View.GONE);
             layoutRegister.setVisibility(View.VISIBLE);
-        } else if (view.getId() == R.id.confirmeButton) {
+
+        } else if (id == R.id.confirmeButton) {
             registerUser();
-        } else if (view.getId() == R.id.annulerButton) {
+
+        } else if (id == R.id.annulerButton) {
             layoutLogin.setVisibility(View.VISIBLE);
             layoutRegister.setVisibility(View.GONE);
         }
@@ -101,8 +122,8 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
             Toast.makeText(this, "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
             return;
         }
-        Log.d("DEBUG_EMAIL", "Email saisi : '" + email + "'");
 
+        Log.d("DEBUG_EMAIL", "Email saisi : '" + email + "'");
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
@@ -111,7 +132,6 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
                         if (user != null) {
                             String userId = user.getUid();
 
-                            // Vérifier dans Firestore si l'utilisateur est Agent ou Client
                             db.collection("Agents").document(userId).get()
                                     .addOnSuccessListener(documentSnapshot -> {
                                         if (documentSnapshot.exists()) {
@@ -132,24 +152,7 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
                         Toast.makeText(Authentification.this, "Erreur d'authentification.", Toast.LENGTH_SHORT).show();
                     }
                 });
-
     }
-
-    // Fonction pour lancer le bon dashboard avec le rôle
-    private void startDashboard(String role) {
-        // Stocker le rôle dans SharedPreferences
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("role", role);
-        editor.apply(); // Appliquer les modifications
-
-        Intent intent = new Intent(Authentification.this, DashboardActivity.class);
-        intent.putExtra("USER_ROLE", role);
-        startActivity(intent);
-        finish();
-    }
-
-
 
     private void registerUser() {
         String nom = etNom.getText().toString().trim();
@@ -161,12 +164,12 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
         String password = etPwd.getText().toString().trim();
         String role = spinnerRole.getSelectedItem().toString();
 
-        if (nom.isEmpty() || prenom.isEmpty() || pays.isEmpty() || adresse.isEmpty() || phone.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        if (nom.isEmpty() || prenom.isEmpty() || pays.isEmpty() || adresse.isEmpty() ||
+                phone.isEmpty() || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Création de l'utilisateur dans Firebase Authentication
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -174,7 +177,6 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
                         if (user != null) {
                             String userId = user.getUid();
 
-                            // Création du document dans Firestore
                             Map<String, Object> userData = new HashMap<>();
                             userData.put("nom", nom);
                             userData.put("prenom", prenom);
@@ -184,7 +186,6 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
                             userData.put("email", email);
                             userData.put("role", role);
 
-                            // Ajouter à la bonne collection (Clients ou Agents)
                             db.collection(role).document(userId)
                                     .set(userData)
                                     .addOnSuccessListener(aVoid -> {
@@ -198,5 +199,17 @@ public class Authentification extends AppCompatActivity implements View.OnClickL
                         Toast.makeText(Authentification.this, "Erreur de création de compte.", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void startDashboard(String role) {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("role", role);
+        editor.apply();
+
+        Intent intent = new Intent(Authentification.this, DashboardActivity.class);
+        intent.putExtra("USER_ROLE", role);
+        startActivity(intent);
+        finish();
     }
 }
