@@ -55,6 +55,32 @@ public class Offres extends AppCompatActivity {
     }
 
     private void chargerOffres() {
+
+            db.collection("Offres")
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            offreList.clear();
+                            documents.clear();
+                            if (task.getResult().isEmpty()) {
+                                Log.w("Firestore", "Aucune offre trouvée !");
+                            }
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d("Firestore", "Offre récupérée : " + document.getData());
+                                String titre = document.getString("titre");
+                                String prix = document.getString("prix");
+                                if (titre != null && prix != null) {
+                                    offreList.add(titre + " - " + prix + " MAD");
+                                    documents.add(document);
+                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Log.e("Firestore", "Erreur lors du chargement des offres", task.getException());
+                        }
+                    });
+
+
         db.collection("Offres")
                 .get()
                 .addOnCompleteListener(task -> {

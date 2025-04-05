@@ -7,37 +7,102 @@
     android:gravity="center"
     android:background="@color/white">
 
-    <TextView
-        android:id="@+id/tvWelcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bienvenue sur le Dashboard"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="20dp"/>
-
-    <Button
-        android:id="@+id/btnGestionOffres"
+    <!-- Layout pour le CLIENT -->
+    <LinearLayout
+        android:id="@+id/layoutClient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Gestion des Offres"
-        android:padding="10dp"
-        android:layout_marginBottom="10dp"/>
+        android:orientation="vertical"
+        android:visibility="gone">  <!-- Caché par défaut -->
 
-    <Button
-        android:id="@+id/btnGestionDemandes"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bienvenue, Client !"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="20dp"/>
+
+        <Button
+            android:id="@+id/btnGestionOffresClient"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Voir les Offres"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <Button
+            android:id="@+id/btnGestionDemandesClient"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Faire une Demande"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"/>
+    </LinearLayout>
+
+    <!-- Layout pour l'AGENT -->
+    <LinearLayout
+        android:id="@+id/layoutAgent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Gestion des Demandes"
-        android:padding="10dp"
-        android:layout_marginBottom="10dp"/>
+        android:orientation="vertical"
+        android:visibility="gone">  <!-- Caché par défaut -->
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bienvenue, Agent !"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- Gérer les offres -->
+        <Button
+            android:id="@+id/btnGestionOffresAgent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gérer les Offres"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Consulter les demandes -->
+        <Button
+            android:id="@+id/btnConsulterDemandesAgent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Consulter les Demandes"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Gérer le profil -->
+        <Button
+            android:id="@+id/btnGererProfilAgent"
+            android:text="Mon Profil"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <!-- Ajouter une offre -->
+        <Button
+            android:id="@+id/btnAjouterOffresAgent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ajouter une Offre"
+            android:padding="10dp"
+            android:layout_marginBottom="10dp"/>
+
+    </LinearLayout>
+
+    <!-- Bouton de Déconnexion (commun) -->
     <Button
         android:id="@+id/btnDeconnexion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Se Déconnecter"
         android:padding="10dp"
-        android:backgroundTint="@android:color/holo_red_light"/>
+        android:backgroundTint="@android:color/holo_red_light"
+        android:layout_marginTop="20dp"/>
+
 </LinearLayout>
